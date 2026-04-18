@@ -1,25 +1,36 @@
-def main():
-    while True:
-        print("=== Mini NPU Simulator ===")
-        print()
-        print("[모드 선택]")
-        print("1. 사용자 입력 (3x3)")
-        print("2. data.json 분석")
-        print("0. 종료")
-        choice = input("선택: ").strip()
+def mac(matrix_a, matrix_b):
+    total = 0.0
+    for i in range(len(matrix_a)):
+        for j in range(len(matrix_a[i])):
+            total += matrix_a[i][j] * matrix_b[i][j]
+    return total
 
-        if choice == "1":
-            print("사용자 입력 모드를 선택했습니다.")
-            break
-        elif choice == "2":
-            print("data.json 분석 모드를 선택했습니다.")
-            break
-        elif choice == "0":
-            print("프로그램을 종료합니다.")
-            break
-        else:
-            print("잘못된 입력입니다. 다시 선택하세요.")
-            print()
+
+def main():
+    cross = [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 1, 0]
+    ]
+
+    x_shape = [
+        [1, 0, 1],
+        [0, 1, 0],
+        [1, 0, 1]
+    ]
+
+    pattern = [
+        [1, 0, 1],
+        [0, 1, 0],
+        [1, 0, 1]
+    ]
+
+    cross_score = mac(pattern, cross)
+    x_score = mac(pattern, x_shape)
+
+    print("=== Mini NPU Simulator ===")
+    print(f"Cross 점수: {cross_score}")
+    print(f"X 점수: {x_score}")
 
 
 if __name__ == "__main__":
