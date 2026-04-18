@@ -22,7 +22,7 @@ def input_matrix(size, name):
     matrix = []
 
     while len(matrix) < size:
-        row_input = input(f"{len(matrix)+1}번째 줄: ")
+        row_input = input(f"{len(matrix) + 1}번째 줄: ")
         row = parse_row(row_input, size)
 
         if row is None:
@@ -51,7 +51,7 @@ def measure_mac_time(matrix_a, matrix_b, repeat=10):
         end = time.perf_counter()
         total_time += (end - start)
 
-    avg_time = (total_time / repeat) * 1000  # ms 변환
+    avg_time = (total_time / repeat) * 1000
     return avg_time
 
 
@@ -64,11 +64,18 @@ def decide(score_a, score_b):
         return "B"
 
 
-def main():
-    print("=== Mini NPU Simulator ===")
-
+def run_user_input_mode():
+    print()
+    print("#---------------------------------------")
+    print("# [1] 필터 입력")
+    print("#---------------------------------------")
     filter_a = input_matrix(3, "필터 A")
     filter_b = input_matrix(3, "필터 B")
+
+    print()
+    print("#---------------------------------------")
+    print("# [2] 패턴 입력")
+    print("#---------------------------------------")
     pattern = input_matrix(3, "패턴")
 
     score_a = mac(pattern, filter_a)
@@ -81,11 +88,43 @@ def main():
     result = decide(score_a, score_b)
 
     print()
-    print("=== MAC 결과 ===")
+    print("#---------------------------------------")
+    print("# [3] MAC 결과")
+    print("#---------------------------------------")
     print(f"A 점수: {score_a}")
     print(f"B 점수: {score_b}")
     print(f"연산 시간(평균/10회): {avg_time:.6f} ms")
     print(f"판정: {result}")
+
+
+def run_json_mode():
+    print()
+    print("data.json 분석 모드는 다음 단계에서 구현합니다.")
+
+
+def main():
+    while True:
+        print("=== Mini NPU Simulator ===")
+        print()
+        print("[모드 선택]")
+        print("1. 사용자 입력 (3x3)")
+        print("2. data.json 분석")
+        print("0. 종료")
+
+        choice = input("선택: ").strip()
+
+        if choice == "1":
+            run_user_input_mode()
+            break
+        elif choice == "2":
+            run_json_mode()
+            break
+        elif choice == "0":
+            print("프로그램을 종료합니다.")
+            break
+        else:
+            print("잘못된 입력입니다. 다시 선택하세요.")
+            print()
 
 
 if __name__ == "__main__":
