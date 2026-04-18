@@ -1,3 +1,4 @@
+import json
 import time
 
 EPSILON = 1e-9
@@ -64,6 +65,36 @@ def decide(score_a, score_b):
         return "B"
 
 
+def normalize_expected_label(label):
+    if label == "+":
+        return "Cross"
+    elif label == "x":
+        return "X"
+    return "UNKNOWN"
+
+
+def normalize_filter_key(key):
+    if key == "cross":
+        return "Cross"
+    elif key == "x":
+        return "X"
+    return "UNKNOWN"
+
+
+def decide_label(score_cross, score_x):
+    if abs(score_cross - score_x) < EPSILON:
+        return "UNDECIDED"
+    elif score_cross > score_x:
+        return "Cross"
+    else:
+        return "X"
+
+
+def load_json_file(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        return json.load(file)
+
+
 def run_user_input_mode():
     print()
     print("#---------------------------------------")
@@ -98,8 +129,73 @@ def run_user_input_mode():
 
 
 def run_json_mode():
+    data = load_json_file("data.json")
+
+    filters = data["filters"]
+    patterns = data["patterns"]
+
     print()
-    print("data.json 분석 모드는 다음 단계에서 구현합니다.")
+    print("#---------------------------------------")
+    print("# [1] 필터 로드")
+    print("#---------------------------------------")
+
+    loaded_filters = {}
+
+    for size_key, filter_group in filters.items():
+        loaded_filters[size_key] = {}
+
+        for filter_key, filter_matrix in filter_group.items():
+            label = normalize_filter_key(filter_key)
+            loaded_filters[size_key][label] = filter_matrix
+
+        print(f"✓ {size_key} 필터 로드 완료")
+
+    print()
+    print("#---------------------------------------")
+    print("# [2] 패턴 분석")
+    print("#---------------------------------------")
+
+    total_count = 0
+    pass_count = 0
+    fail_count = 0
+
+    for pattern_key, pattern_info in patterns.items():
+        total_count += 1
+
+        pattern_input = pattern_info["input"]
+        expected_raw = pattern_info["expected"]
+        expected_label = normalize_expected_label(expected_raw)
+
+        parts = pattern_key.split("_")
+        size_number = parts[1]
+        size_key = f"size_{size_number}"
+
+        cross_filter = loaded_filters[size_key]["Cross"]
+        x_filter = loaded_filters[size_key]["X"]
+
+        score_cross = mac(pattern_input, cross_filter)
+        score_x = mac(pattern_input, x_filter)
+        result_label = decide_label(score_cross, score_x)
+
+        if result_label == expected_label:
+            test_result = "PASS"
+            pass_count += 1
+        else:
+            test_result = "FAIL"
+            fail_count += 1
+
+        print(f"--- {pattern_key} ---")
+        print(f"Cross 점수: {score_cross}")
+        print(f"X 점수: {score_x}")
+        print(f"판정: {result_label} | expected: {expected_label} | {test_result}")
+        print()
+
+    print("#---------------------------------------")
+    print("# [3] 결과 요약")
+    print("#---------------------------------------")
+    print(f"총 테스트: {total_count}개")
+    print(f"통과: {pass_count}개")
+    print(f"실패: {fail_count}개")
 
 
 def main():
