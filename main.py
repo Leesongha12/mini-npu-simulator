@@ -1,3 +1,6 @@
+EPSILON = 1e-9
+
+
 def parse_row(text, expected_size):
     parts = text.strip().split()
     if len(parts) != expected_size:
@@ -37,6 +40,15 @@ def mac(matrix_a, matrix_b):
     return total
 
 
+def decide(score_a, score_b):
+    if abs(score_a - score_b) < EPSILON:
+        return "UNDECIDED"
+    elif score_a > score_b:
+        return "A"
+    else:
+        return "B"
+
+
 def main():
     print("=== Mini NPU Simulator ===")
     filter_a = input_matrix(3, "필터 A")
@@ -45,11 +57,13 @@ def main():
 
     score_a = mac(pattern, filter_a)
     score_b = mac(pattern, filter_b)
+    result = decide(score_a, score_b)
 
     print()
     print("=== MAC 결과 ===")
     print(f"A 점수: {score_a}")
     print(f"B 점수: {score_b}")
+    print(f"판정: {result}")
 
 
 if __name__ == "__main__":
