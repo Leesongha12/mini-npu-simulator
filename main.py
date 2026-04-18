@@ -1,3 +1,5 @@
+import time
+
 EPSILON = 1e-9
 
 
@@ -40,6 +42,19 @@ def mac(matrix_a, matrix_b):
     return total
 
 
+def measure_mac_time(matrix_a, matrix_b, repeat=10):
+    total_time = 0.0
+
+    for _ in range(repeat):
+        start = time.perf_counter()
+        mac(matrix_a, matrix_b)
+        end = time.perf_counter()
+        total_time += (end - start)
+
+    avg_time = (total_time / repeat) * 1000  # ms 변환
+    return avg_time
+
+
 def decide(score_a, score_b):
     if abs(score_a - score_b) < EPSILON:
         return "UNDECIDED"
@@ -51,18 +66,25 @@ def decide(score_a, score_b):
 
 def main():
     print("=== Mini NPU Simulator ===")
+
     filter_a = input_matrix(3, "필터 A")
     filter_b = input_matrix(3, "필터 B")
     pattern = input_matrix(3, "패턴")
 
     score_a = mac(pattern, filter_a)
     score_b = mac(pattern, filter_b)
+
+    time_a = measure_mac_time(pattern, filter_a)
+    time_b = measure_mac_time(pattern, filter_b)
+    avg_time = (time_a + time_b) / 2
+
     result = decide(score_a, score_b)
 
     print()
     print("=== MAC 결과 ===")
     print(f"A 점수: {score_a}")
     print(f"B 점수: {score_b}")
+    print(f"연산 시간(평균/10회): {avg_time:.6f} ms")
     print(f"판정: {result}")
 
 
